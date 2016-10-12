@@ -14,9 +14,6 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
-# nyc test coverage
-.nyc_output
-
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
@@ -26,12 +23,33 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
-# Dependency directories
+# Dependency directory
+# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
-jspm_packages
 
 # Optional npm cache directory
 .npm
 
 # Optional REPL history
 .node_repl_history
+
+# don't commit .env as it should be local to your dev environment
+.env
+
+# don't commit .checkbuildrc_base as it will be downloaded each time check-build run
+.checkbuildrc_base
+
+# same for jshintrc_base
+.jshintrc_base
+
+# same for .eslintrc_base
+.eslintrc_base
+
+# don't commit .jscsrc as it will be downloaded each time check-build run
+.jscsrc
+
+# don't commit junit.xml
+junit.xml
+
+.idea
+.npmrc
