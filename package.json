@@ -38,6 +38,7 @@
     "uuid": "x",
     "lodash": "x",
     "socket.io": "x",
-    "node-wit": "git+https://github.com/wit-ai/node-wit"
+    "node-wit": "git+https://github.com/wit-ai/node-wit",
+    "when": "x"
   }
 }
