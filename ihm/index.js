@@ -3,33 +3,50 @@
 var SOCKET_URL = 'http://localhost';
 var SOCKET_PORT = 3000;
 
+function SocketManager (logger) {
+  this.socket = io(SOCKET_URL + ':' + SOCKET_PORT);
+
+  this.socket.on('connect', function () {
+    logger.info('Connected on port ' + SOCKET_PORT);
+  });
+
+  return {
+    sendMessage: function (message) {
+      this.socket.send(message);
+    }.bind(this),
+    addReceivedMessageHandler: function (handler) {
+      this.socket.on('message', handler);
+    }.bind(this)
+  }
+};
+
+/* Dynamic IHM actions */
+
+var buildMessage = function (from, message) {
+  $('.messages').append(
+    '<div class="pseudo" data-from="' + from + '">' + from + '</div>' +
+    '<div class="message" data-from="' + from + '">' + message + '</div>'
+  );
+};
+
+/* Entry point */
+
 $(document).ready(function () {
-  var socket = io(SOCKET_URL + ':' + SOCKET_PORT);
   var sessionId;
+  var socketManager = new SocketManager(console);
 
-  var buildMessage = function (from, message) {
-    $('.messages').append('<div class="message" data-from="' + from + '">' + message + '</div>');
-  };
+  socketManager.addReceivedMessageHandler(function (data) {
+    sessionId = data.sessionId;
+    buildMessage('bot', data.message);
+  });
 
-  var sendAndBuildVisitorMessage = function (message) {
+  // When the visitor send a message
+  $('.send').on('click', function () {
+    var message = $('input[name="visitor"]').val();
     buildMessage('visitor', message);
-    socket.send({
+    socketManager.sendMessage({
       sessionId: sessionId,
       message: message
     });
-  };
-
-  socket.on('connect', function () {
-    console.log('Connected on port ' + SOCKET_PORT);
-    socket.on('message', function (data) {
-      console.log('got session id ' + data.sessionId);
-      sessionId = data.sessionId;
-      buildMessage('bot', data.message);
-    });
-  });
-
-  $('.send').on('click', function () {
-    var message = $('input[name="visitor"]').val();
-    sendAndBuildVisitorMessage(message);
-  });
+  }.bind(this));
 });
