@@ -1,0 +1,40 @@
+{
+  "name": "employment-credits-service",
+  "title": "employment-credits-service",
+  "private": true,
+  "version": "2.1.1",
+  "description": "Credits management for employment domain",
+  "main": "server.js",
+  "scripts": {
+    "db:up": "docker exec employmentcreditsservice_employment-credits-service_1 sh -c \"\\$(npm bin)/db-migrate up\"",
+    "db:down": "docker exec employmentcreditsservice_employment-credits-service_1 sh -c \"\\$(npm bin)/db-migrate down\"",
+    "test": "npm run test:stop && docker-compose -f docker-compose.test.yml run service-test && npm run test:stop",
+    "test:mocha": "mocha -r bootstrap.test.js 'test/*.test.js'",
+    "test:stop": "docker-compose -f docker-compose.test.yml down",
+    "test:watch": "mocha -w -G -r bootstrap.test.js **/**/**.test.js",
+    "check-build": "check-build",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iadvize/employment-credits-service.git"
+  },
+  "author": {
+    "name": "Nevezide",
+    "email": "nevezide44@gmail.com"
+  },
+  "engines": {
+    "node": "4"
+  },
+  "license": {
+    "name": "iAdvize",
+    "url": "http://iadvize.com"
+  },
+  "bugs": {
+    "url": "https://github.com/iadvize/employment-credits-service/issues"
+  },
+  "homepage": "https://github.com/iadvize/employment-credits-service",
+  "dependencies": {
+    "node-wit": "git+https://github.com/wit-ai/node-wit"
+  }
+}
