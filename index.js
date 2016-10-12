@@ -28,6 +28,7 @@ const actions = {
       return resolve();
     });
   },
+  
   getContactsPerHour({context, entities}) {
     return new Promise(function(resolve, reject) {
       console.log(context);
@@ -39,6 +40,16 @@ const actions = {
       });
     });
   },
+
+  question({context, entities}) {
+    return new Promise(function(resolve, reject) {
+      console.log(context);
+
+      return resolve({
+        question: "first try",
+      });
+    });
+  }
 };
 
 const client = new Wit({accessToken, actions});

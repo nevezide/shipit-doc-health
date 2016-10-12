@@ -35,6 +35,8 @@
   },
   "homepage": "https://github.com/iadvize/employment-credits-service",
   "dependencies": {
-    "node-wit": "git+https://github.com/wit-ai/node-wit"
+    "express": "^4.14.0",
+    "node-wit": "git+https://github.com/wit-ai/node-wit",
+    "socket.io": "^1.5.0"
   }
 }
