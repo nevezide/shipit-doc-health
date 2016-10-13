@@ -6,7 +6,7 @@ module.exports = (config, errors, domain, logger) => {
   actions.send = (req, res) => {
     logger.error(new errors.WitClientError('wit', 'Missing receivedMessageHandler'));
   };
-  
+
   const client = new wit.Wit({accessToken: config.token, actions});
   return {
     client,
