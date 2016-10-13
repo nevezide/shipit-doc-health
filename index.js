@@ -9,7 +9,7 @@ const errors = require('./errors')(console);
 const sessionManager = require('./managers/session')(uuid, errors);
 const socketManager = require('./managers/socket')(config.socket, errors, console, sessionManager);
 const resources = require('./resources')(config.resources, errors, console);
-const domain = require('./domain')(resources);
+const domain = require('./domain')(errors, resources);
 const wit = require('./wit')(config.wit, errors, domain, console);
 
 socketManager.create()

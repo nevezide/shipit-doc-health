@@ -1,7 +1,7 @@
 'use strict';
 
-module.exports = (resources) => {
+module.exports = (errors, resources) => {
   return {
-    stats: require('./stats')(resources.publicApi)
+    stats: require('./stats')(errors, resources.publicApi, resources.dataMinding)
   };
 };

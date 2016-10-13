@@ -30,7 +30,7 @@ module.exports = function(config, errors, logger, httpClient) {
     if (_.isEmpty(platform) || _.isEmpty(config[platform])) {
       return when.reject(
         new errors.HttpClientError(
-          'PublicApi/getStatistic',
+          'PublicApi/get',
           'Missing or bad platform parameter'
         )
       );
@@ -41,7 +41,7 @@ module.exports = function(config, errors, logger, httpClient) {
     options.json = true;
     options.headers = options.headers || {};
     options.headers['X-API-Key'] = config[platform].key;
-console.log(options);
+
     return httpClient(options)
       .then(responseHandler)
       .catch((error) => {

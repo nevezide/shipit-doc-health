@@ -2,11 +2,11 @@
 
 module.exports = (statsDomain) => {
 
-  const getEntity = (entities, entity) => {
+  const getEntity = (entities, entity, attribute) => {
     const val = entities && entities[entity] &&
         Array.isArray(entities[entity]) &&
         entities[entity].length > 0 &&
-        entities[entity][0].value
+       (attribute && entities[entity][0][attribute] || entities[entity][0].value)
       ;
     if (!val) {
       return null;
@@ -21,9 +21,8 @@ module.exports = (statsDomain) => {
           const params = {
             clientName: getEntity(entities, 'clientName'),
             indicators: getEntity(entities, 'indicators'),
-            datetime: getEntity(entities, 'datetime'),
-            from: getEntity(entities, 'from'),
-            to: getEntity(entities, 'to'),
+            from: getEntity(entities, 'datetime', 'from'),
+            to: getEntity(entities, 'datetime', 'to'),
             channel: getEntity(entities, 'channel'),
             resource: getEntity(entities, 'resource'),
             resource_id: getEntity(entities, 'resource_id'),
@@ -38,14 +37,9 @@ module.exports = (statsDomain) => {
             context.missingIndicators = true;
             return when.resolve(context);
           }
-          if (!(_.isEmpty(params.datetime) || (_.isEmpty(params.from) && _.isEmpty(params.to)))) {
+          if (_.isEmpty(params.from) || _.isEmpty(params.to)) {
             context.missingPeriod = true;
             return when.resolve(context);
-          }
-          if (!_.isEmpty(params.datetime)) {
-            params.from = params.datetime;
-            params.to = params.datetime;
-            delete params.datetime;
           }
 
           params.from = _.truncate(params.from, {
@@ -67,6 +61,7 @@ module.exports = (statsDomain) => {
                 data: _.round(_.values(data)[0], 2)
               };
               params.indicators = _.lowerCase(params.indicators);
+              params.datetime = (params.from === params.to) ? 'on ' + params.from : 'from ' + params.from + ' to ' + params.to;
 
               return _.merge(context, params, output);
             });
