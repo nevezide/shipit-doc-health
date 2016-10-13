@@ -25,7 +25,7 @@ module.exports = (config, errors, logger, sessionManager) => {
     });
   };
 
-  var sendMessage = (sessionId, message) => {
+  var sendMessage = (sessionId, message, quickReplies) => {
     return sessionManager.getSession(sessionId)
     .then((session) => {
       if (_.isEmpty(session.socket)) {
@@ -36,7 +36,8 @@ module.exports = (config, errors, logger, sessionManager) => {
       session.socket.send({
         sessionId,
         type: 'message',
-        message
+        message,
+        quickReplies
       });
     });
   };
