@@ -1,39 +1,43 @@
 'use strict';
 
-module.exports = (uuid) => {
+module.exports = (uuid, errors) => {
   this.sessionsPool = {};
 
   var createSession = () => {
-    const sessionIdentifier = uuid.v1();
-    const newSession = {
-      id: sessionIdentifier,
-      context: {}
-    };
-    this.sessionsPool[sessionIdentifier] = newSession;
-    return newSession;
+    return when.promise((resolve) => {
+      const sessionIdentifier = uuid.v1();
+      const newSession = {
+        id: sessionIdentifier
+      };
+      this.sessionsPool[sessionIdentifier] = newSession;
+      return resolve(newSession);
+    });
   };
 
   var getSession = (sessionId) => {
-    return this.sessionsPool[sessionId];
+    return when.promise((resolve, reject) => {
+      let session = this.sessionsPool[sessionId];
+      if (_.isEmpty(session)) {
+        return reject(new errors.SessionNotFoundError('session/setSession', 'Unknown session ' + sessionId));
+      }
+      return resolve(session);
+    });
   };
 
-  var setSession = (sessionId, context) => {
-    let session = this.sessionsPool[sessionId] || {};
-    session.id = sessionId;
-    session.context = context;
-    return session;
-  };
-
-  var getOrCreateSession = (sessionId) => {
-    var session = getSession(sessionId);
-    if (_.isEmpty(session)) {
-      session = createSession();
-    }
-    return session;
+  var setSession = (sessionId, attribute, value) => {
+    return when.promise((resolve, reject) => {
+      let session = this.sessionsPool[sessionId];
+      if (_.isEmpty(session)) {
+        return reject(new errors.SessionNotFoundError('session/setSession', 'Unknown session ' + sessionId));
+      }
+      session[attribute] = value;
+      return resolve(session);
+    });
   };
 
   return {
-    getOrCreateSession,
+    createSession,
+    getSession,
     setSession
   };
 };

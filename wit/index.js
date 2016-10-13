@@ -1,10 +1,10 @@
 'use strict';
 
-module.exports = (config, domain, logger) => {
+module.exports = (config, errors, domain, logger) => {
   const wit = require('node-wit');
   const actions = require('./actions')(domain);
   actions.send = (req, res) => {
-    logger.warn('No message reception handler provided');
+    logger.error(new errors.WitClientError('wit', 'Missing receivedMessageHandler'));
   };
   
   const client = new wit.Wit({accessToken: config.token, actions});

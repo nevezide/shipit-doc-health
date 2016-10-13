@@ -1,33 +1,56 @@
 'use strict';
 
-module.exports = (logger) => {
+module.exports = (config, errors, logger, sessionManager) => {
 
   const socketIo = require('socket.io');
 
-  var connect = (port) => {
-    return when.promise((resolve) => {
-      socketIo(port).on('connection', (socket) => {
-        logger.log('Socket connected on port ' + port);
-        resolve(socket);
+  this.receivedMessageHandler = () => {
+    logger.error(new errors.SocketConnectionError('socket', 'Missing receivedMessageHandler'));
+  };
+
+  var createConnection = (socket) => {
+    return sessionManager.createSession()
+    .then((session) => {
+      sessionManager.setSession(session.id, 'socket', socket)
+      .then(() => {
+        socket.send({
+          sessionId: session.id,
+          type: 'connection.established'
+        });
+      })
+      .then(() => {
+        socket.on('message', this.receivedMessageHandler);
+        logger.log('New connection ' + session.id + ' on port ' + config.port)
       });
     });
   };
-  
-  var exports = (socket) => {
-    return {
-      sendMessage: (message) => {
-        socket.send(message);
-      },
-      addReceivedMessageHandler: (handler) => {
-        socket.on('message', handler);
+
+  var sendMessage = (sessionId, message) => {
+    return sessionManager.getSession(sessionId)
+    .then((session) => {
+      if (_.isEmpty(session.socket)) {
+        return when.reject(
+          new errors.SocketNotFoundError('socket/exports', 'No socket found in session ' + sessionId)
+        );
       }
-    };
+      session.socket.send({
+        sessionId,
+        type: 'message',
+        message
+      });
+    });
   };
-  
+
   return {
-    connect: (port) => {
-      return connect(port)
-      .then(exports);
+    create: () => {
+      socketIo(config.port).on('connection', createConnection);
+      logger.log('Socket listening on port ' + config.port);
+      return when.resolve({
+        sendMessage,
+        addReceivedMessageHandler: (handler) => {
+          this.receivedMessageHandler = handler;
+        }
+      });
     }
   };
 };
