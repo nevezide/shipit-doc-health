@@ -1,45 +1,43 @@
 'use strict';
 
-let Wit = null;
-let interactive = null;
-try {
-  // if running from repo
-  Wit = require('../').Wit;
-  interactive = require('../').interactive;
-} catch (e) {
-  Wit = require('node-wit').Wit;
-  interactive = require('node-wit').interactive;
-}
+require('./bootstrap');
 
-const accessToken = (() => {
-  if (process.argv.length !== 3) {
-    console.log('usage: node index.js <wit-access-token>');
-    process.exit(1);
-  }
-  return process.argv[2];
-})();
-
-const actions = {
-  send(request, response) {
-    const {sessionId, context, entities} = request;
-    const {text, quickreplies} = response;
-    return new Promise(function(resolve, reject) {
-      console.log('sending...', JSON.stringify(response));
-      return resolve();
-    });
-  },
-  getContactsPerHour({context, entities}) {
-    return new Promise(function(resolve, reject) {
-      console.log(context);
-
-      return resolve({
-        contacts: 45,
-        "client.name": 'Maty',
-        "client.id":2
-      });
-    });
-  },
+const config = {
+  port: 3000,
+  token: 'IX3MEX6BDY6MD653ZP2YG3ULALENYAAR'
 };
 
-const client = new Wit({accessToken, actions});
-interactive(client);
+const uuid = require ('uuid');
+const sessionManager = require('./managers/session')(uuid);
+const socketManager = require('./managers/socket')(console);
+const domain = require('./domain');
+const wit = require('./wit')(config, domain, console);
+
+socketManager.connect(config.port)
+  .then((socket) => {
+    // When the bot responds to the visitor
+    wit.addReceivedMessageHandler((request, response) => {
+      return when.promise(function(resolve) {
+        socket.sendMessage({
+          sessionId: request.sessionId,
+          message: response.text
+        });
+        return resolve();
+      });
+    });
+    // When the visitor send a message to the bot
+    socket.addReceivedMessageHandler((data) => {
+      var session = sessionManager.getOrCreateSession(data.sessionId);
+      wit.client.runActions(
+        session.id, // the user's current session
+        data.message, // the user's message
+        session.context
+      )
+      .then((context) => {
+        sessionManager.setSession(session.id, context);
+      })
+      .catch((err) => {
+        console.error('Oops! Got an error from Wit: ', err.stack || err);
+      });
+    });
+  });
