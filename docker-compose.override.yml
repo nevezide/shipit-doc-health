@@ -1,0 +1,8 @@
+version: '2'
+services:
+  shipit-bot:
+    build: .
+    command: "npm run start-dev"
+    volumes:
+      - .:/app
+    env_file: .env

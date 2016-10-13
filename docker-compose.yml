@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  shipit-bot:
+    image: khaly/shipit-bot:master
+    container_name: shipit-bot
+    restart: unless-stopped
+    ports:
+      - "6010:3000"
+      - "6011:3001"
+    env_file: .env

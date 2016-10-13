@@ -1,13 +1,19 @@
 'use strict';
 
-var SOCKET_URL = 'http://localhost';
-var SOCKET_PORT = 3000;
+var SOCKET_URL = 'http://'+window.location.hostname;
+var SOCKET_PORT = parseInt(window.location.port)+1;
+
+
 
 function SocketManager (logger) {
   this.socket = io(SOCKET_URL + ':' + SOCKET_PORT);
 
   this.socket.on('connect', function () {
     logger.info('Connected on port ' + SOCKET_PORT);
+  });
+
+  this.socket.on('connect_error', function () {
+    logger.info('connected error ' + SOCKET_PORT);
   });
 
   return {

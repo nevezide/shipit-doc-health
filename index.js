@@ -3,7 +3,8 @@
 require('./bootstrap');
 
 const config = {
-  port: 3001,
+  port: process.env.SOCKET_PORT,
+  token: process.env.WIT_AI_TOKEN
 };
 
 const uuid = require ('uuid');
