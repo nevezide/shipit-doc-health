@@ -36,6 +36,8 @@
   },
   "homepage": "https://github.com/iadvize/employment-credits-service",
   "dependencies": {
+    "request": "^2.73.0",
+    "request-promise": "^4.0.1",
     "uuid": "x",
     "lodash": "x",
     "socket.io": "x",

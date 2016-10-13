@@ -1,9 +1,7 @@
 'use strict';
 
 var SOCKET_URL = 'http://'+window.location.hostname;
-var SOCKET_PORT = parseInt(window.location.port)+1;
-
-
+var SOCKET_PORT = parseInt(window.location.port) + 1;
 
 function SocketManager (logger) {
   this.socket = io(SOCKET_URL + ':' + SOCKET_PORT);
@@ -43,7 +41,10 @@ $(document).ready(function () {
 
   socketManager.addReceivedMessageHandler(function (data) {
     sessionId = data.sessionId;
-    buildMessage('bot', data.message);
+
+    if (data.type === 'message') {
+      buildMessage('bot', data.message);
+    }
   });
 
   // When the visitor send a message
