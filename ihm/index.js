@@ -95,7 +95,7 @@ $(document).ready(function () {
 
   // When the visitor send a message
   $('.send').on('click', function () {
-    var message = $('input[name="visitor"]').val();
+    var message = $('#message_box').val();
     const data = {
       message: message,
       sessionId: sessionId
