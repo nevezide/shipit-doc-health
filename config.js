@@ -12,12 +12,12 @@ module.exports = {
   resources: {
     publicApi: {
       ha: {
-        host: 'http://ha.iadvize.com/api/2',
-        key: 'b4960503a73158fe5eeb20872d769a6f'
+        host: process.env.PUBLICAPI_HA_HOST,
+        key: process.env.PUBLICAPI_HA_KEY
       },
       sd: {
-        host: 'http://www.iadvize.com/api/2',
-        key: '595562f2a1c3e3773a93a32601b3c339'
+        host: process.env.PUBLICAPI_SD_HOST,
+        key: process.env.PUBLICAPI_SD_KEY
       }
     }
   }
