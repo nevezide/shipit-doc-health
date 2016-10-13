@@ -4,7 +4,7 @@
   "private": true,
   "version": "2.1.1",
   "description": "Credits management for employment domain",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "db:up": "docker exec employmentcreditsservice_employment-credits-service_1 sh -c \"\\$(npm bin)/db-migrate up\"",
     "db:down": "docker exec employmentcreditsservice_employment-credits-service_1 sh -c \"\\$(npm bin)/db-migrate down\"",
@@ -13,7 +13,8 @@
     "test:stop": "docker-compose -f docker-compose.test.yml down",
     "test:watch": "mocha -w -G -r bootstrap.test.js **/**/**.test.js",
     "check-build": "check-build",
-    "start": "node server.js"
+    "start": "node index.js",
+    "start-dev": "nodemon -L index.js"
   },
   "repository": {
     "type": "git",
@@ -39,6 +40,7 @@
     "lodash": "x",
     "socket.io": "x",
     "node-wit": "git+https://github.com/wit-ai/node-wit",
+    "nodemon": "^1.9.1",
     "when": "x"
   }
 }
