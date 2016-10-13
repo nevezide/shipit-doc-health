@@ -23,34 +23,84 @@ function SocketManager (logger) {
     }.bind(this)
   }
 };
+var socketManager = new SocketManager(console);
+
+var sendQuickResponse = (elmt, response, sessionId) => {
+  socketManager.sendMessage({
+    sessionId: sessionId,
+    message: response
+  });
+  elmt.parent().addClass('active');
+  $('.quickReply').remove();
+  buildMessage('me', {
+    message: response,
+  });
+
+};
 
 /* Dynamic IHM actions */
 
-var buildMessage = function (from, message) {
+var buildMessage = function (from, data) {
+
+  const message = data.message;
+  const quickReplies = data.quickReplies ? data.quickReplies : null;
+  const sessionId = data.sessionId ? data.sessionId: null;
+
   $('.messages').append(
-    '<div class="pseudo" data-from="' + from + '">' + from + '</div>' +
-    '<div class="message" data-from="' + from + '">' + message + '</div>'
+    '<div class="box_context ' + from +'">' +
+      '<div class="box_message ' + from +'">' +
+        '<div class="pseudo" data-from="' + from + '">' + from + '</div>' +
+        '<div class="message" data-from="' + from + '">' + message + '</div>' +
+      '</div>'
   );
+
+  if (quickReplies) {
+    $('.messages').append('<ul class="quickReplies">');
+        quickReplies.forEach((value) => {
+          $('.messages').append(
+              '<li class="quickReply">' +
+                  '<a href="javascript:void(0);" onclick="sendQuickResponse($(this),\'' + value + '\',\'' + sessionId + '\');">' +
+              value +
+              '</a>' +
+              '</li>'
+          );
+        })
+    $('.messages').append('</ul>');
+  }
+
+  $('.messages').append(
+      '</div>'
+  );
+
 };
 
 /* Entry point */
 
 $(document).ready(function () {
   var sessionId;
-  var socketManager = new SocketManager(console);
 
   socketManager.addReceivedMessageHandler(function (data) {
     sessionId = data.sessionId;
-
+    
     if (data.type === 'message') {
-      buildMessage('bot', data.message);
+      buildMessage('Dr Bot', data);
+    }
+  });
+
+  $("#message_box").keyup(function(event){
+    if(event.keyCode == 13){
+      $('.send').click();
     }
   });
 
   // When the visitor send a message
   $('.send').on('click', function () {
     var message = $('input[name="visitor"]').val();
-    buildMessage('visitor', message);
+    const data = {
+      message: message,
+      sessionId: sessionId
+    }
+    buildMessage('me', data);
     socketManager.sendMessage({
       sessionId: sessionId,
       message: message

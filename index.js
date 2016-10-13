@@ -16,7 +16,8 @@ socketManager.create()
   .then((socket) => {
     // When the bot responds to the visitor
     wit.addReceivedMessageHandler((request, response) => {
-      return socket.sendMessage(request.sessionId, response.text);
+      const {text, quickreplies} = response;
+      return socket.sendMessage(request.sessionId, text, quickreplies);
     });
     // When the visitor send a message to the bot
     socket.addReceivedMessageHandler((data) => {
