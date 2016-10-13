@@ -1,6 +1,7 @@
 'use strict';
 
-// TODO Put all business work here (ex: stats api calls)
-module.exports = (resources) => {
-
+module.exports = (errors, resources) => {
+  return {
+    stats: require('./stats')(errors, resources.publicApi, resources.dataMinding)
+  };
 };

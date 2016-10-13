@@ -37,6 +37,7 @@
     "socket.io": "x",
     "node-wit": "git+https://github.com/wit-ai/node-wit",
     "nodemon": "^1.9.1",
-    "when": "x"
+    "when": "x",
+    "mysql": "x"
   }
 }

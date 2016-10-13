@@ -31,6 +31,7 @@ module.exports = function(logger) {
     SocketNotFoundError: require('./socketNotFoundError')(DefaultError),
     WitClientError: require('./witClientError')(DefaultError),
     WitBadRequestError: require('./witBadRequestError')(DefaultError),
-    SessionNotFoundError: require('./sessionNotFoundError')(DefaultError)
+    SessionNotFoundError: require('./sessionNotFoundError')(DefaultError),
+    DataMindingError: require('./dataMindingError')(DefaultError)
   };
 };

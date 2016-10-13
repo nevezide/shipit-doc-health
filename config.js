@@ -19,6 +19,22 @@ module.exports = {
         host: process.env.PUBLICAPI_SD_HOST,
         key: process.env.PUBLICAPI_SD_KEY
       }
+    },
+    dataMinding: {
+      ha: {
+        host: process.env.MYSQL_HA_HOST,
+        port: process.env.MYSQL_HA_PORT,
+        user: process.env.MYSQL_HA_USER,
+        password: process.env.MYSQL_HA_PASSWORD,
+        database: process.env.MYSQL_HA_DB
+      },
+      sd: {
+        host: process.env.MYSQL_SD_HOST,
+        port: process.env.MYSQL_SD_PORT,
+        user: process.env.MYSQL_SD_USER,
+        password: process.env.MYSQL_SD_PASSWORD,
+        database: process.env.MYSQL_SD_DB
+      }
     }
   }
 };
