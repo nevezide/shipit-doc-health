@@ -23,87 +23,45 @@ function SocketManager (logger) {
     }.bind(this)
   }
 };
-var socketManager = new SocketManager(console);
-
-var sendQuickResponse = (elmt, response, sessionId) => {
-  socketManager.sendMessage({
-    sessionId: sessionId,
-    message: response
-  });
-  elmt.parent().addClass('active');
-  $('.quickReply').remove();
-  buildMessage('me', {
-    message: response,
-  });
-
-};
 
 /* Dynamic IHM actions */
 
 var buildMessage = function (from, data) {
-
   const message = data.message;
-  const quickReplies = data.quickReplies ? data.quickReplies : null;
-  const sessionId = data.sessionId ? data.sessionId: null;
 
-  $('.messages').append(
-    '<div class="box_context ' + from +'">' +
-      '<div class="box_message ' + from +'">' +
-        '<div class="pseudo" data-from="' + from + '">' + from + '</div>' +
-        '<div class="message" data-from="' + from + '">' + message + '</div>' +
-      '</div>'
+  $('#chat-content .inner:first').append(
+    '<div class="message">' +
+      '<p class="inner ' + from + '">' +
+         message +
+      '</p>' +
+    '</div>'
   );
-
-  if (quickReplies) {
-    $('.messages').append('<ul class="quickReplies">');
-        quickReplies.forEach((value) => {
-          $('.messages').append(
-              '<li class="quickReply">' +
-                  '<a href="javascript:void(0);" onclick="sendQuickResponse($(this),\'' + value + '\',\'' + sessionId + '\');">' +
-              value +
-              '</a>' +
-              '</li>'
-          );
-        })
-    $('.messages').append('</ul>');
-  }
-
-  $('.messages').append(
-      '</div>'
-  );
-
 };
-
-/* Entry point */
 
 $(document).ready(function () {
   var sessionId;
-
+  var socketManager = new SocketManager(console);
   socketManager.addReceivedMessageHandler(function (data) {
     sessionId = data.sessionId;
-    
+
     if (data.type === 'message') {
-      buildMessage('Dr Bot', data);
+      buildMessage('bot', data);
     }
   });
 
-  $("#message_box").keyup(function(event){
+  $("#chat-input input").keyup(function (event) {
     if(event.keyCode == 13){
-      $('.send').click();
+      const message = $("#chat-input input").val();
+      const data = {
+        message: message,
+        sessionId: sessionId
+      };
+      buildMessage('visitor', data);
+      socketManager.sendMessage({
+        sessionId: sessionId,
+        message: message
+      });
     }
   });
-
-  // When the visitor send a message
-  $('.send').on('click', function () {
-    var message = $('#message_box').val();
-    const data = {
-      message: message,
-      sessionId: sessionId
-    }
-    buildMessage('me', data);
-    socketManager.sendMessage({
-      sessionId: sessionId,
-      message: message
-    });
-  }.bind(this));
 });
+
