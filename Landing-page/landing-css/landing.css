@@ -51,6 +51,11 @@ body {
 	position: absolute;
     width: 100%;
 }
+#chat-box header span {
+	float: right;
+	cursor: pointer;
+	margin-right: 15px;
+}
 
 #chat-input {
 	position: absolute;
