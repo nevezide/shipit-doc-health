@@ -32,6 +32,7 @@ module.exports = function(logger) {
     WitClientError: require('./witClientError')(DefaultError),
     WitBadRequestError: require('./witBadRequestError')(DefaultError),
     SessionNotFoundError: require('./sessionNotFoundError')(DefaultError),
-    DataMindingError: require('./dataMindingError')(DefaultError)
+    DataMindingError: require('./dataMindingError')(DefaultError),
+    ClientNotFoundError: require('./clientNotFoundError')(DefaultError)
   };
 };

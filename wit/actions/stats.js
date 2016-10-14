@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = (statsDomain) => {
+module.exports = (logger, statsDomain) => {
 
   const getEntity = (entities, entity, attribute) => {
     const val = entities && entities[entity] &&
@@ -56,10 +56,12 @@ module.exports = (statsDomain) => {
 
           return when(_.values(params))
             .spread(statsDomain.getContactsPerHour)
-            .then((data) => {
+            .then((result) => {
               const output = {
-                data: _.round(_.values(data)[0], 2)
+                data: _.round(_.values(result.data)[0], 2)
               };
+              params.clientName = result.client.clientName;
+              params.clientId = result.client.clientId;
               params.indicators = _.lowerCase(params.indicators);
               params.datetime = (params.from === params.to) ? 'on ' + params.from : 'from ' + params.from + ' to ' + params.to;
 
@@ -67,6 +69,7 @@ module.exports = (statsDomain) => {
             });
         })
         .catch((error) => {
+          logger.error(error);
           return {error};
         });
     }

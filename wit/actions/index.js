@@ -1,7 +1,7 @@
 'use strict';
 
-module.exports = (domain) => {
-  const stats = require('./stats')(domain.stats);
+module.exports = (logger, domain) => {
+  const stats = require('./stats')(logger, domain.stats);
 
   return _.merge({}, stats);
 };
