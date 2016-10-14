@@ -100,6 +100,7 @@ $(document).ready(function () {
     if(event.keyCode == 13) {
       const message = $("#chat-input input").val();
       sendVisitorMessage(message);
+      $("#chat-input input").val("");
     }
   });
 });
