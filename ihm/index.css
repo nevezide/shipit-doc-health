@@ -38,6 +38,8 @@ body {
 	position: relative;
 	bottom: 63px;
 	margin: 0 25%;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 #chat-box header {
