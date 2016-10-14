@@ -2,7 +2,7 @@
 
 module.exports = (config, errors, domain, logger) => {
   const wit = require('node-wit');
-  const actions = require('./actions')(domain);
+  const actions = require('./actions')(logger, domain);
   actions.send = (req, res) => {
     logger.error(new errors.WitClientError('wit', 'Missing receivedMessageHandler'));
   };

@@ -3,24 +3,40 @@
 module.exports = (errors, publicApi, dataMinding) => {
   return {
     getContactsPerHour: (clientName, indicators, from, to, channel, resource, resource_id, granularity) => {
-      // TODO A extraire de la recherche du nom du client
-      const platform = 'ha';
 
-      return dataMinding.getClientWebsiteFromName(platform, clientName)
-      .then((data) => {
-        if (_.isEmpty(data) || _.isEmpty(data[0]) || _.isEmpty(data[0].websites)) {
-          return when.reject(new errors.ClientNotFoundError(
-            'domain/stats/getContactsPerHour',
-            'The client ' + clientName + ' is not found'
-          ));
+      const promises = [
+        dataMinding.getClientWebsitesFromName('ha', clientName),
+        dataMinding.getClientWebsitesFromName('sd', clientName)
+      ];
+
+      return when.settle(promises)
+      .spread((ha, sd) => {
+        if (ha.state === 'fulfilled') {
+          return {
+            platform: 'ha',
+            client: ha.value
+          }
         }
-        return data[0].websites;
+        if (sd.state === 'fulfilled') {
+          return {
+            platform: 'sd',
+            client: sd.value
+          }
+        }
+        return when.reject(new errors.ClientNotFoundError(
+          'domain/stats/getContactsPerHour',
+          'The client ' + clientName + ' is not found on both platforms'
+        ));
       })
-      .then((websites) => {
+      .then((result) => {
+        const platform = result.platform;
+        const websites = result.client.websites;
+
         return publicApi.getStatistic(
           platform, websites, channel, resource, resource_id, indicators, from, to, granularity
-        );
-        //TODO Decorate with full client name with id in parenthesis
+        ).then((data) => {
+          return _.merge(result, {data});
+        });
       });
     }
   };
