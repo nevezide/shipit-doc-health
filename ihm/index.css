@@ -49,7 +49,7 @@ body {
 	padding: 10px 0;
 	border-bottom: 1px solid #AAAAAA;
 	position: absolute;
-    width: 100%;
+	width: 100%;
 }
 #chat-box header span {
 	float: right;
@@ -76,12 +76,13 @@ body {
 
 #chat-content {
 	overflow-y: scroll;
-	height: 100%;
+	height: calc(100% - 40px);
 	position: relative;
+    padding: 20px;
 }
 
 #chat-content>.inner {
-	padding: 0px 45px;
+
 	min-height: 100%;
 }
 
@@ -105,4 +106,21 @@ body {
 	background-color: #1BC74E;
 	position: relative;
 	float: right;
+}
+.message>.inner .quickReplies {
+	list-style: none;
+	font-size: 10px;
+    padding: 0px;
+    margin: 0px;
+    margin-top: 10px;
+}
+.message>.inner a {
+    float: left;
+    padding: 3px;
+    margin: 2px;
+    border: 1px solid #CCC;
+    background-color: rgba(222, 222, 222, 0.4);
+    border-radius: 4px;
+    cursor: pointer;
+    color: #FFF;
 }

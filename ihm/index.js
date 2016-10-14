@@ -24,43 +24,82 @@ function SocketManager (logger) {
   }
 };
 
+var sessionId;
+var socketManager = new SocketManager(console);
+
 /* Dynamic IHM actions */
 
-var buildMessage = function (from, data) {
-  const message = data.message;
+var buildQuickReplies = function (replies) {
+  let html = '<ul class="quickReplies">';
+  replies.forEach((value) => {
+    html += '<li class="quickReply">' +
+        '<a data-tag="' + value + '">' +
+          value +
+        '</a>' +
+      '</li>';
+  });
+  html += '</ul>';
+  return html;
+};
+
+var appendMessage = function (from, message, quickReplies) {
+  const hasQuickReplies = quickReplies && quickReplies.length > 0;
 
   $('#chat-content .inner:first').append(
     '<div class="message">' +
-      '<p class="inner ' + from + '">' +
-         message +
-      '</p>' +
+      '<div class="inner ' + from + '">' +
+         '<div class="text">' + message + '</div>' +
+         (hasQuickReplies ? buildQuickReplies(quickReplies) : '') +
+      '</div>' +
     '</div>'
   );
+
+  if (hasQuickReplies) {
+    $('.quickReplies a').each((index, reply) => {
+      $(reply).on('click', (event) => {
+        const tag = $(event.target).attr('data-tag');
+        sendQuickReply(tag);
+      });
+    });
+  }
+
+  updateScroll();
+};
+
+var sendVisitorMessage = (message) => {
+  const data = {
+    message,
+    sessionId
+  };
+  appendMessage('visitor', message);
+  socketManager.sendMessage(data);
+};
+
+var sendQuickReply = (reply) => {
+  sendVisitorMessage(reply);
+  $('.quickReply').remove();
+};
+
+var updateScroll = () => {
+  var element = $('#chat-content');
+  element.scrollTop(element[0].scrollHeight);
 };
 
 $(document).ready(function () {
-  var sessionId;
-  var socketManager = new SocketManager(console);
+
   socketManager.addReceivedMessageHandler(function (data) {
     sessionId = data.sessionId;
 
     if (data.type === 'message') {
-      buildMessage('bot', data);
+      appendMessage('bot', data.message, data.quickReplies);
     }
   });
 
   $("#chat-input input").keyup(function (event) {
-    if(event.keyCode == 13){
+    // User press ENTER
+    if(event.keyCode == 13) {
       const message = $("#chat-input input").val();
-      const data = {
-        message: message,
-        sessionId: sessionId
-      };
-      buildMessage('visitor', data);
-      socketManager.sendMessage({
-        sessionId: sessionId,
-        message: message
-      });
+      sendVisitorMessage(message);
     }
   });
 });
